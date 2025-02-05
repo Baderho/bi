@@ -203,10 +203,11 @@
         const existingProduct = products.find(product => product.name === productName);
 
         if (existingProduct) {
-            // تحديث الكميات للمادة الموجودة
-            existingProduct.internalQuantity += internalQuantity;
-            existingProduct.externalQuantity += externalQuantity;
-            existingProduct.total = existingProduct.internalQuantity + existingProduct.externalQuantity;
+            // استبدال الكميات والملاحظات
+            existingProduct.internalQuantity = internalQuantity;
+            existingProduct.externalQuantity = externalQuantity;
+            existingProduct.notes = notes;
+            existingProduct.total = internalQuantity + externalQuantity;
             existingProduct.lastModified = new Date().toLocaleString();  // تحديث تاريخ آخر تعديل
         } else {
             // إضافة مادة جديدة
