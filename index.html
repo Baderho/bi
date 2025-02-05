@@ -115,6 +115,9 @@
         </form>
     </div>
 
+    <!-- زر حفظ البيانات -->
+    <button class="btn btn-success w-100" onclick="saveDataToServer()">حفظ البيانات</button>
+
     <!-- جدول المواد -->
     <div class="table-container">
         <h2 class="mb-4">قائمة المواد الكيميائية</h2>
@@ -126,6 +129,7 @@
                     <th>الكمية الداخلية</th>
                     <th>الكمية الخارجية</th>
                     <th>المجموع</th>
+                    <th>تاريخ آخر تعديل</th>
                     <th>إجراءات</th>
                 </tr>
             </thead>
@@ -170,7 +174,7 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    let products = [];
+    let products = JSON.parse(localStorage.getItem('products')) || [];
 
     document.getElementById('productName').addEventListener('change', function() {
         const selectedValue = this.value;
@@ -190,25 +194,38 @@
         if (productName === 'other') {
             productName = document.getElementById('customProductName').value;
         }
-        
+
         const notes = document.getElementById('notes').value;
         const internalQuantity = parseInt(document.getElementById('internalQuantity').value);
         const externalQuantity = parseInt(document.getElementById('externalQuantity').value);
 
-        const product = {
-            name: productName,
-            notes: notes,
-            internalQuantity: internalQuantity,
-            externalQuantity: externalQuantity,
-            total: internalQuantity + externalQuantity
-        };
+        // البحث عن المادة في القائمة
+        const existingProduct = products.find(product => product.name === productName);
 
-        products.push(product);
+        if (existingProduct) {
+            // تحديث الكميات للمادة الموجودة
+            existingProduct.internalQuantity += internalQuantity;
+            existingProduct.externalQuantity += externalQuantity;
+            existingProduct.total = existingProduct.internalQuantity + existingProduct.externalQuantity;
+            existingProduct.lastModified = new Date().toLocaleString();  // تحديث تاريخ آخر تعديل
+        } else {
+            // إضافة مادة جديدة
+            const product = {
+                name: productName,
+                notes: notes,
+                internalQuantity: internalQuantity,
+                externalQuantity: externalQuantity,
+                total: internalQuantity + externalQuantity,
+                lastModified: new Date().toLocaleString(),
+            };
+            products.push(product);
+        }
+
         updateTable();
         updateStatistics();
-        saveDataToGitHub(products); // Call the function to save data
+        localStorage.setItem('products', JSON.stringify(products));
+
         document.getElementById('addProductForm').reset();
-        document.getElementById('customProductContainer').style.display = 'none'; // Hide custom input
     });
 
     function updateTable() {
@@ -223,6 +240,7 @@
                 <td>${product.internalQuantity}</td>
                 <td>${product.externalQuantity}</td>
                 <td>${product.total}</td>
+                <td>${product.lastModified}</td>
                 <td>
                     <button class="btn btn-delete btn-sm" onclick="deleteProduct(${index})">حذف</button>
                 </td>
@@ -235,7 +253,7 @@
         products.splice(index, 1);
         updateTable();
         updateStatistics();
-        saveDataToGitHub(products); // Save after deleting
+        localStorage.setItem('products', JSON.stringify(products));
     }
 
     function updateStatistics() {
@@ -248,28 +266,15 @@
         document.getElementById('totalOverall').textContent = totalOverall;
     }
 
-    // Function to save data to GitHub (Example approach using GitHub API)
-    function saveDataToGitHub(products) {
-        const repoUrl = 'https://api.github.com/repos/USERNAME/REPOSITORY/contents/products.json';
-        const token = 'YOUR_GITHUB_TOKEN'; // Replace with your GitHub token
-
-        const data = {
-            message: 'Update products data',
-            content: btoa(JSON.stringify(products)) // Base64 encoding
-        };
-
-        fetch(repoUrl, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `token ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => console.log('Data saved to GitHub:', data))
-        .catch(error => console.error('Error saving data to GitHub:', error));
+    function saveDataToServer() {
+        // هنا يجب استبدال هذا الجزء بكود يقوم بإرسال البيانات إلى السيرفر
+        console.log("تم حفظ البيانات على السيرفر");
     }
+
+    // عرض البيانات عند تحميل الصفحة
+    updateTable();
+    updateStatistics();
 </script>
+
 </body>
 </html>
