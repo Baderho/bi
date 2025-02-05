@@ -3,152 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مبادرة رقيم</title>
+    <title>إدارة المواد الكيميائية</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* إعادة تعيين الهوامش والحشو */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* تخصيص الخطوط */
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
-            line-height: 1.6;
+            background-color: #f8f9fa;
+            font-family: 'Tajawal', sans-serif;
         }
-
-        /* تخصيص العنوان */
-        header {
-            background: linear-gradient(135deg, #6e48aa, #9d50bb);
-            color: #fff;
-            padding: 20px 0;
-            text-align: center;
+        h1, h2 {
+            color: #2c3e50;
+            font-weight: bold;
         }
-
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-
-        header p {
-            font-size: 1.2rem;
-        }
-
-        /* تخصيص القسم الرئيسي */
-        main {
+        .form-container {
+            background-color: #ffffff;
             padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
-
-        section {
-            margin-bottom: 40px;
+        .table-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
-
-        section h2 {
-            color: #6e48aa;
-            font-size: 2rem;
-            margin-bottom: 15px;
+        .statistics {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
-        section p {
-            font-size: 1.1rem;
-            line-height: 1.8;
+        .btn-custom {
+            background-color: #3498db;
+            color: #ffffff;
+            border: none;
+            transition: background-color 0.3s ease;
         }
-
-        /* تخصيص القوائم */
-        ul {
-            list-style-type: none;
-            padding: 0;
+        .btn-custom:hover {
+            background-color: #2980b9;
         }
-
-        ul li {
-            background: #e0e0ff;
-            margin: 10px 0;
-            padding: 10px;
-            border-left: 5px solid #6e48aa;
-            font-size: 1.1rem;
+        .btn-delete {
+            background-color: #e74c3c;
+            color: #ffffff;
+            border: none;
+            transition: background-color 0.3s ease;
         }
-
-        /* تخصيص الفوتر */
-        footer {
-            background: #333;
-            color: #fff;
-            text-align: center;
-            padding: 15px 0;
-            margin-top: 40px;
+        .btn-delete:hover {
+            background-color: #c0392b;
         }
-
-        footer p {
-            margin: 0;
-            font-size: 1rem;
+        .form-group-custom {
+            display: flex;
+            align-items: center;
         }
-
-        /* تخصيص الروابط */
-        a {
-            color: #6e48aa;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        /* تخصيص الأزرار */
-        .btn {
-            display: inline-block;
-            background: #6e48aa;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 1rem;
-            transition: background 0.3s ease;
-        }
-
-        .btn:hover {
-            background: #9d50bb;
+        .form-group-custom input {
+            margin-left: 10px;
         }
     </style>
 </head>
 <body>
 
-    <!-- الهيدر -->
-    <header>
-        <h1>مبادرة رقيم</h1>
-        <p>مبادرة لتطوير المحتوى الرقمي العربي</p>
-    </header>
+<div class="container my-5">
+    <h1 class="text-center mb-4">إدارة المواد الكيميائية</h1>
 
-    <!-- المحتوى الرئيسي -->
-    <main>
-        <section>
-            <h2>عن المبادرة</h2>
-            <p>مبادرة رقيم هي مبادرة تهدف إلى رفع الوعي الرقمة.</p>
-        </section>
+    <!-- نموذج إضافة مادة -->
+    <div class="form-container">
+        <form id="addProductForm">
+            <div class="mb-3">
+                <label for="productName" class="form-label">اسم المادة:</label>
+                <select class="form-control" id="productName" required>
+                    <option value="">اختر المادة</option>
+                    <option value="MATERIL">MATERIL</option>
+                    <option value="Mousse FORT">Mousse FORT</option>
+                    <option value="Clean Pot">Clean Pot</option>
+                    <option value="PROACID">PROACID</option>
+                    <option value="HANDY PREP">HANDY PREP</option>
+                    <option value="cream clean">cream clean</option>
+                    <option value="Duromax">Duromax</option>
+                    <option value="Hypo Bleach">Hypo Bleach</option>
+                    <option value="No Streak RTU">No Streak RTU</option>
+                    <option value="FLOORESH">FLOORESH</option>
+                    <option value="GX2">GX2</option>
+                    <option value="Aqua Soul">Aqua Soul</option>
+                    <option value="Hand Roll">Hand Roll</option>
+                    <option value="Thinner">Thinner</option>
+                    <option value="Stark">Stark</option>
+                    <option value="Sanitol">Sanitol</option>
+                    <option value="Gx6">Gx6</option>
+                    <option value="other">إضافة مادة يدوية</option>
+                </select>
+            </div>
+            <div class="form-group-custom" id="customProductContainer" style="display: none;">
+                <input type="text" class="form-control" id="customProductName" placeholder="أدخل اسم المادة">
+            </div>
+            <div class="mb-3">
+                <label for="notes" class="form-label">الملاحظات:</label>
+                <input type="text" class="form-control" id="notes" required>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="internalQuantity" class="form-label">الكمية في المستودع الداخلي:</label>
+                    <input type="number" class="form-control" id="internalQuantity" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="externalQuantity" class="form-label">الكمية في المستودع الخارجي:</label>
+                    <input type="number" class="form-control" id="externalQuantity" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-custom w-100">إضافة مادة</button>
+        </form>
+    </div>
 
-        <section>
-            <h2>أهدافنا</h2>
-            <ul>
-                <li>تحسين جودة المحتوى الرقمي العربي.</li>
-                <li>دعم المبدعين والمؤسسات في إنشاء محتوى مميز.</li>
-                <li>توفير منصة تعاونية لتبادل الخبرات والمعرفة.</li>
-            </ul>
-        </section>
+    <!-- جدول المواد -->
+    <div class="table-container">
+        <h2 class="mb-4">قائمة المواد الكيميائية</h2>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>اسم المادة</th>
+                    <th>الملاحظات</th>
+                    <th>الكمية الداخلية</th>
+                    <th>الكمية الخارجية</th>
+                    <th>المجموع</th>
+                    <th>إجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="productTableBody">
+                <!-- المواد ستضاف هنا -->
+            </tbody>
+        </table>
+    </div>
 
-        <section>
-            <h2>انضم إلينا</h2>
-            <p>إذا كنت مهتمًا بالمشاركة في مبادرة رقيم، يمكنك التواصل معنا عبر البريد الإلكتروني أو الانضمام إلى مجتمعنا عبر منصات التواصل الاجتماعي.</p>
-            <a href="mailto:info@raqeem.com" class="btn">تواصل معنا</a>
-        </section>
-    </main>
+    <!-- الإحصائيات -->
+    <div class="statistics">
+        <h2 class="mb-4">الإحصائيات</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">إجمالي الكمية الداخلية</h5>
+                        <p class="card-text fs-4" id="totalInternal">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">إجمالي الكمية الخارجية</h5>
+                        <p class="card-text fs-4" id="totalExternal">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">إجمالي الكمية الكلية</h5>
+                        <p class="card-text fs-4" id="totalOverall">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <!-- الفوتر -->
-    <footer>
-        <p>جميع الحقوق محفوظة &copy; 2023 مبادرة رقيم</p>
-    </footer>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let products = [];
 
+    document.getElementById('productName').addEventListener('change', function() {
+        const selectedValue = this.value;
+        const customProductContainer = document.getElementById('customProductContainer');
+        
+        if (selectedValue === 'other') {
+            customProductContainer.style.display = 'flex';
+        } else {
+            customProductContainer.style.display = 'none';
+        }
+    });
+
+    document.getElementById('addProductForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        let productName = document.getElementById('productName').value;
+        if (productName === 'other') {
+            productName = document.getElementById('customProductName').value;
+        }
+        
+        const notes = document.getElementById('notes').value;
+        const internalQuantity = parseInt(document.getElementById('internalQuantity').value);
+        const externalQuantity = parseInt(document.getElementById('externalQuantity').value);
+
+        const product = {
+            name: productName,
+            notes: notes,
+            internalQuantity: internalQuantity,
+            externalQuantity: externalQuantity,
+            total: internalQuantity + externalQuantity
+        };
+
+        products.push(product);
+        updateTable();
+        updateStatistics();
+        saveDataToGitHub(products); // Call the function to save data
+        document.getElementById('addProductForm').reset();
+        document.getElementById('customProductContainer').style.display = 'none'; // Hide custom input
+    });
+
+    function updateTable() {
+        const tbody = document.getElementById('productTableBody');
+        tbody.innerHTML = '';
+
+        products.forEach((product, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${product.name}</td>
+                <td>${product.notes}</td>
+                <td>${product.internalQuantity}</td>
+                <td>${product.externalQuantity}</td>
+                <td>${product.total}</td>
+                <td>
+                    <button class="btn btn-delete btn-sm" onclick="deleteProduct(${index})">حذف</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function deleteProduct(index) {
+        products.splice(index, 1);
+        updateTable();
+        updateStatistics();
+        saveDataToGitHub(products); // Save after deleting
+    }
+
+    function updateStatistics() {
+        const totalInternal = products.reduce((sum, product) => sum + product.internalQuantity, 0);
+        const totalExternal = products.reduce((sum, product) => sum + product.externalQuantity, 0);
+        const totalOverall = totalInternal + totalExternal;
+
+        document.getElementById('totalInternal').textContent = totalInternal;
+        document.getElementById('totalExternal').textContent = totalExternal;
+        document.getElementById('totalOverall').textContent = totalOverall;
+    }
+
+    // Function to save data to GitHub (Example approach using GitHub API)
+    function saveDataToGitHub(products) {
+        const repoUrl = 'https://api.github.com/repos/USERNAME/REPOSITORY/contents/products.json';
+        const token = 'YOUR_GITHUB_TOKEN'; // Replace with your GitHub token
+
+        const data = {
+            message: 'Update products data',
+            content: btoa(JSON.stringify(products)) // Base64 encoding
+        };
+
+        fetch(repoUrl, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => console.log('Data saved to GitHub:', data))
+        .catch(error => console.error('Error saving data to GitHub:', error));
+    }
+</script>
 </body>
 </html>
