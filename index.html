@@ -1,165 +1,281 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flappy Bird - العصفور الأزرق</title>
+    <title>إدارة المواد الكيميائية</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* تنسيقات الصفحة */
         body {
-            margin: 0;
-            padding: 0;
+            background-color: #f8f9fa;
+            font-family: 'Tajawal', sans-serif;
+        }
+        h1, h2 {
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        .form-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .table-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .statistics {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-custom {
+            background-color: #3498db;
+            color: #ffffff;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        .btn-custom:hover {
+            background-color: #2980b9;
+        }
+        .btn-delete {
+            background-color: #e74c3c;
+            color: #ffffff;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+        .form-group-custom {
             display: flex;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
-            background-color: #70c5ce; /* خلفية السماء */
-            overflow: hidden;
         }
-
-        #game-container {
-            position: relative;
-            width: 400px;
-            height: 600px;
-            background-color: #fff;
-            overflow: hidden;
-            border: 2px solid #000;
-        }
-
-        #bird {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background-color: #00f; /* لون العصفور الأزرق */
-            border-radius: 50%;
-            top: 300px;
-            left: 50px;
-        }
-
-        .pipe {
-            position: absolute;
-            width: 50px;
-            background-color: #0a0;
-            bottom: 0;
-        }
-
-        .pipe-top {
-            top: 0;
-            transform: rotate(180deg);
+        .form-group-custom input {
+            margin-left: 10px;
         }
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <div id="bird"></div>
-        <div id="pipes"></div>
+
+<div class="container my-5">
+    <h1 class="text-center mb-4">إدارة المواد الكيميائية</h1>
+
+    <!-- نموذج إضافة مادة -->
+    <div class="form-container">
+        <form id="addProductForm">
+            <div class="mb-3">
+                <label for="productName" class="form-label">اسم المادة:</label>
+                <select class="form-control" id="productName" required>
+                    <option value="">اختر المادة</option>
+                   
+                    <option value="Mousse FORT">Mousse FORT</option>
+                    <option value="Clean Pot">Clean Pot</option>
+                    <option value="PROACID">PROACID</option>
+                    <option value="HANDY PREP">HANDY PREP</option>
+                    <option value="cream clean">cream clean</option>
+                    <option value="Duromax">Duromax</option>
+                    <option value="Hypo Bleach">Hypo Bleach</option>
+                    <option value="No Streak RTU">No Streak RTU</option>
+                    <option value="FLOORESH">FLOORESH</option>
+                    <option value="GX2">GX2</option>
+                    <option value="Aqua Soul">Aqua Soul</option>
+                    <option value="Hand Roll">Hand Roll</option>
+                    <option value="Thinner">Thinner</option>
+                    <option value="Stark">Stark</option>
+                    <option value="Sanitol">Sanitol</option>
+                    <option value="Gx6">Gx6</option>
+                    <option value="other">إضافة مادة يدوية</option>
+                </select>
+            </div>
+            <div class="form-group-custom" id="customProductContainer" style="display: none;">
+                <input type="text" class="form-control" id="customProductName" placeholder="أدخل اسم المادة">
+            </div>
+            <div class="mb-3">
+                <label for="notes" class="form-label">الملاحظات:</label>
+                <input type="text" class="form-control" id="notes" required>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="internalQuantity" class="form-label">الكمية في المستودع الداخلي:</label>
+                    <input type="number" class="form-control" id="internalQuantity" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="externalQuantity" class="form-label">الكمية في المستودع الخارجي:</label>
+                    <input type="number" class="form-control" id="externalQuantity" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-custom w-100">إضافة مادة</button>
+        </form>
     </div>
 
-    <script>
-        // JavaScript للعبة
-        const bird = document.getElementById("bird");
-        const gameContainer = document.getElementById("game-container");
-        const pipesContainer = document.getElementById("pipes");
+    <!-- زر حفظ البيانات -->
+    <button class="btn btn-success w-100" onclick="saveDataToServer()">حفظ البيانات</button>
 
-        let birdPosition = 300; // موقع العصفور على المحور Y
-        let gravity = 2; // قوة الجاذبية
-        let isGameOver = false;
+    <!-- جدول المواد -->
+    <div class="table-container">
+        <h2 class="mb-4">قائمة المواد الكيميائية</h2>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>اسم المادة</th>
+                    <th>الملاحظات</th>
+                    <th>الكمية الداخلية</th>
+                    <th>الكمية الخارجية</th>
+                    <th>المجموع</th>
+                    <th>تاريخ آخر تعديل</th>
+                    <th>إجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="productTableBody">
+                <!-- المواد ستضاف هنا -->
+            </tbody>
+        </table>
+    </div>
 
-        // تفعيل القفز عند الضغط على أي مفتاح
-        document.addEventListener("keydown", () => {
-            if (!isGameOver) {
-                birdPosition -= 50; // تحريك العصفور للأعلى
-            }
+    <!-- الإحصائيات -->
+    <div class="statistics">
+        <h2 class="mb-4">الإحصائيات</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">إجمالي الكمية الداخلية</h5>
+                        <p class="card-text fs-4" id="totalInternal">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">إجمالي الكمية الخارجية</h5>
+                        <p class="card-text fs-4" id="totalExternal">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">إجمالي الكمية الكلية</h5>
+                        <p class="card-text fs-4" id="totalOverall">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let products = JSON.parse(localStorage.getItem('products')) || [];
+
+    document.getElementById('productName').addEventListener('change', function() {
+        const selectedValue = this.value;
+        const customProductContainer = document.getElementById('customProductContainer');
+        
+        if (selectedValue === 'other') {
+            customProductContainer.style.display = 'flex';
+        } else {
+            customProductContainer.style.display = 'none';
+        }
+    });
+
+    document.getElementById('addProductForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        let productName = document.getElementById('productName').value;
+        if (productName === 'other') {
+            productName = document.getElementById('customProductName').value;
+        }
+
+        const notes = document.getElementById('notes').value;
+        const internalQuantity = parseInt(document.getElementById('internalQuantity').value);
+        const externalQuantity = parseInt(document.getElementById('externalQuantity').value);
+
+        // البحث عن المادة في القائمة
+        const existingProduct = products.find(product => product.name === productName);
+
+        if (existingProduct) {
+            // استبدال الكميات والملاحظات
+            existingProduct.internalQuantity = internalQuantity;
+            existingProduct.externalQuantity = externalQuantity;
+            existingProduct.notes = notes;
+            existingProduct.total = internalQuantity + externalQuantity;
+            existingProduct.lastModified = new Date().toLocaleString();  // تحديث تاريخ آخر تعديل
+        } else {
+            // إضافة مادة جديدة
+            const product = {
+                name: productName,
+                notes: notes,
+                internalQuantity: internalQuantity,
+                externalQuantity: externalQuantity,
+                total: internalQuantity + externalQuantity,
+                lastModified: new Date().toLocaleString(),
+            };
+            products.push(product);
+        }
+
+        updateTable();
+        updateStatistics();
+        localStorage.setItem('products', JSON.stringify(products));
+
+        document.getElementById('addProductForm').reset();
+    });
+
+    function updateTable() {
+        const tbody = document.getElementById('productTableBody');
+        tbody.innerHTML = '';
+
+        products.forEach((product, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${product.name}</td>
+                <td>${product.notes}</td>
+                <td>${product.internalQuantity}</td>
+                <td>${product.externalQuantity}</td>
+                <td>${product.total}</td>
+                <td>${product.lastModified}</td>
+                <td>
+                    <button class="btn btn-delete btn-sm" onclick="deleteProduct(${index})">حذف</button>
+                </td>
+            `;
+            tbody.appendChild(row);
         });
+    }
 
-        // إنشاء الأنابيب بشكل عشوائي
-        function createPipe() {
-            const pipeGap = 150; // المسافة بين الأنابيب العلوية والسفلية
-            const pipeHeight = Math.random() * 300 + 50; // ارتفاع الأنبوب السفلي
+    function deleteProduct(index) {
+        products.splice(index, 1);
+        updateTable();
+        updateStatistics();
+        localStorage.setItem('products', JSON.stringify(products));
+    }
 
-            const pipeTop = document.createElement("div");
-            pipeTop.classList.add("pipe", "pipe-top");
-            pipeTop.style.height = pipeHeight + "px";
-            pipeTop.style.left = "400px";
+    function updateStatistics() {
+        const totalInternal = products.reduce((sum, product) => sum + product.internalQuantity, 0);
+        const totalExternal = products.reduce((sum, product) => sum + product.externalQuantity, 0);
+        const totalOverall = totalInternal + totalExternal;
 
-            const pipeBottom = document.createElement("div");
-            pipeBottom.classList.add("pipe");
-            pipeBottom.style.height = 600 - pipeHeight - pipeGap + "px";
-            pipeBottom.style.left = "400px";
+        document.getElementById('totalInternal').textContent = totalInternal;
+        document.getElementById('totalExternal').textContent = totalExternal;
+        document.getElementById('totalOverall').textContent = totalOverall;
+    }
 
-            pipesContainer.appendChild(pipeTop);
-            pipesContainer.appendChild(pipeBottom);
+    function saveDataToServer() {
+        // هنا يجب استبدال هذا الجزء بكود يقوم بإرسال البيانات إلى السيرفر
+        console.log("تم حفظ البيانات على السيرفر");
+    }
 
-            // تحريك الأنابيب
-            function movePipes() {
-                if (isGameOver) return;
+    // عرض البيانات عند تحميل الصفحة
+    updateTable();
+    updateStatistics();
+</script>
 
-                const currentLeft = parseInt(window.getComputedStyle(pipeTop).left);
-                if (currentLeft <= -50) {
-                    pipesContainer.removeChild(pipeTop);
-                    pipesContainer.removeChild(pipeBottom);
-                } else {
-                    pipeTop.style.left = currentLeft - 2 + "px";
-                    pipeBottom.style.left = currentLeft - 2 + "px";
-                }
-
-                // التحقق من التصادم
-                checkCollision(pipeTop, pipeBottom);
-            }
-
-            setInterval(movePipes, 20);
-        }
-
-        // التحقق من التصادم
-        function checkCollision(pipeTop, pipeBottom) {
-            const birdRect = bird.getBoundingClientRect();
-            const topRect = pipeTop.getBoundingClientRect();
-            const bottomRect = pipeBottom.getBoundingClientRect();
-
-            if (
-                birdRect.right > topRect.left &&
-                birdRect.left < topRect.right &&
-                birdRect.bottom > topRect.top
-            ) {
-                gameOver();
-            }
-
-            if (
-                birdRect.right > bottomRect.left &&
-                birdRect.left < bottomRect.right &&
-                birdRect.top < bottomRect.bottom
-            ) {
-                gameOver();
-            }
-        }
-
-        // إنهاء اللعبة
-        function gameOver() {
-            isGameOver = true;
-            alert("لقد خسرت! اضغط على 'موافق' لإعادة المحاولة.");
-            location.reload(); // إعادة تحميل الصفحة
-        }
-
-        // تحديث موقع العصفور باستمرار
-        function updateBirdPosition() {
-            if (!isGameOver) {
-                birdPosition += gravity;
-                bird.style.top = birdPosition + "px";
-
-                // التحقق من السقوط
-                if (birdPosition >= 600) {
-                    gameOver();
-                }
-
-                requestAnimationFrame(updateBirdPosition);
-            }
-        }
-
-        // إنشاء الأنابيب بشكل دوري
-        setInterval(createPipe, 2000);
-
-        // بدء اللعبة
-        updateBirdPosition();
-    </script>
 </body>
-</html>
+</html> 
