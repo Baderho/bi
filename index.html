@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة المواد الكيميائية</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -15,25 +14,12 @@
             color: #2c3e50;
             font-weight: bold;
         }
-        .form-container {
+        .form-container, .table-container, .statistics {
             background-color: #ffffff;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
-        }
-        .table-container {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-        .statistics {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .btn-custom {
             background-color: #3498db;
@@ -53,49 +39,17 @@
         .btn-delete:hover {
             background-color: #c0392b;
         }
-        .form-group-custom {
-            display: flex;
-            align-items: center;
-        }
-        .form-group-custom input {
-            margin-left: 10px;
-        }
     </style>
 </head>
 <body>
 
 <div class="container my-5">
     <h1 class="text-center mb-4">إدارة المواد الكيميائية</h1>
-
-    <!-- نموذج إضافة مادة -->
     <div class="form-container">
         <form id="addProductForm">
             <div class="mb-3">
                 <label for="productName" class="form-label">اسم المادة:</label>
-                <select class="form-control" id="productName" required>
-                    <option value="">اختر المادة</option>
-                   
-                    <option value="Mousse FORT">Mousse FORT</option>
-                    <option value="Clean Pot">Clean Pot</option>
-                    <option value="PROACID">PROACID</option>
-                    <option value="HANDY PREP">HANDY PREP</option>
-                    <option value="cream clean">cream clean</option>
-                    <option value="Duromax">Duromax</option>
-                    <option value="Hypo Bleach">Hypo Bleach</option>
-                    <option value="No Streak RTU">No Streak RTU</option>
-                    <option value="FLOORESH">FLOORESH</option>
-                    <option value="GX2">GX2</option>
-                    <option value="Aqua Soul">Aqua Soul</option>
-                    <option value="Hand Roll">Hand Roll</option>
-                    <option value="Thinner">Thinner</option>
-                    <option value="Stark">Stark</option>
-                    <option value="Sanitol">Sanitol</option>
-                    <option value="Gx6">Gx6</option>
-                    <option value="other">إضافة مادة يدوية</option>
-                </select>
-            </div>
-            <div class="form-group-custom" id="customProductContainer" style="display: none;">
-                <input type="text" class="form-control" id="customProductName" placeholder="أدخل اسم المادة">
+                <input type="text" class="form-control" id="productName" required>
             </div>
             <div class="mb-3">
                 <label for="notes" class="form-label">الملاحظات:</label>
@@ -115,10 +69,8 @@
         </form>
     </div>
 
-    <!-- زر حفظ البيانات -->
-    <button class="btn btn-success w-100" onclick="saveDataToServer()">حفظ البيانات</button>
+    <button class="btn btn-success w-100" onclick="saveDataToLocalStorage()">حفظ البيانات</button>
 
-    <!-- جدول المواد -->
     <div class="table-container">
         <h2 class="mb-4">قائمة المواد الكيميائية</h2>
         <table class="table table-hover">
@@ -133,119 +85,46 @@
                     <th>إجراءات</th>
                 </tr>
             </thead>
-            <tbody id="productTableBody">
-                <!-- المواد ستضاف هنا -->
-            </tbody>
+            <tbody id="productTableBody"></tbody>
         </table>
-    </div>
-
-    <!-- الإحصائيات -->
-    <div class="statistics">
-        <h2 class="mb-4">الإحصائيات</h2>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">إجمالي الكمية الداخلية</h5>
-                        <p class="card-text fs-4" id="totalInternal">0</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">إجمالي الكمية الخارجية</h5>
-                        <p class="card-text fs-4" id="totalExternal">0</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">إجمالي الكمية الكلية</h5>
-                        <p class="card-text fs-4" id="totalOverall">0</p>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     let products = JSON.parse(localStorage.getItem('products')) || [];
-
-    document.getElementById('productName').addEventListener('change', function() {
-        const selectedValue = this.value;
-        const customProductContainer = document.getElementById('customProductContainer');
-        
-        if (selectedValue === 'other') {
-            customProductContainer.style.display = 'flex';
-        } else {
-            customProductContainer.style.display = 'none';
-        }
-    });
 
     document.getElementById('addProductForm').addEventListener('submit', function(event) {
         event.preventDefault();
 
         let productName = document.getElementById('productName').value;
-        if (productName === 'other') {
-            productName = document.getElementById('customProductName').value;
-        }
+        let notes = document.getElementById('notes').value;
+        let internalQuantity = parseInt(document.getElementById('internalQuantity').value);
+        let externalQuantity = parseInt(document.getElementById('externalQuantity').value);
+        let total = internalQuantity + externalQuantity;
+        let lastModified = new Date().toLocaleString();
 
-        const notes = document.getElementById('notes').value;
-        const internalQuantity = parseInt(document.getElementById('internalQuantity').value);
-        const externalQuantity = parseInt(document.getElementById('externalQuantity').value);
-
-        // البحث عن المادة في القائمة
-        const existingProduct = products.find(product => product.name === productName);
-
-        if (existingProduct) {
-            // استبدال الكميات والملاحظات
-            existingProduct.internalQuantity = internalQuantity;
-            existingProduct.externalQuantity = externalQuantity;
-            existingProduct.notes = notes;
-            existingProduct.total = internalQuantity + externalQuantity;
-            existingProduct.lastModified = new Date().toLocaleString();  // تحديث تاريخ آخر تعديل
-        } else {
-            // إضافة مادة جديدة
-            const product = {
-                name: productName,
-                notes: notes,
-                internalQuantity: internalQuantity,
-                externalQuantity: externalQuantity,
-                total: internalQuantity + externalQuantity,
-                lastModified: new Date().toLocaleString(),
-            };
-            products.push(product);
-        }
+        const product = { name: productName, notes, internalQuantity, externalQuantity, total, lastModified };
+        products.push(product);
 
         updateTable();
-        updateStatistics();
         localStorage.setItem('products', JSON.stringify(products));
-
         document.getElementById('addProductForm').reset();
     });
 
     function updateTable() {
         const tbody = document.getElementById('productTableBody');
         tbody.innerHTML = '';
-
         products.forEach((product, index) => {
             const row = document.createElement('tr');
-            row.innerHTML = 
+            row.innerHTML = `
                 <td>${product.name}</td>
                 <td>${product.notes}</td>
                 <td>${product.internalQuantity}</td>
                 <td>${product.externalQuantity}</td>
                 <td>${product.total}</td>
                 <td>${product.lastModified}</td>
-                <td>
-                    <button class="btn btn-delete btn-sm" onclick="deleteProduct(${index})">حذف</button>
-                </td>
-            ;
+                <td><button class="btn btn-delete btn-sm" onclick="deleteProduct(${index})">حذف</button></td>
+            `;
             tbody.appendChild(row);
         });
     }
@@ -253,29 +132,16 @@
     function deleteProduct(index) {
         products.splice(index, 1);
         updateTable();
-        updateStatistics();
         localStorage.setItem('products', JSON.stringify(products));
     }
 
-    function updateStatistics() {
-        const totalInternal = products.reduce((sum, product) => sum + product.internalQuantity, 0);
-        const totalExternal = products.reduce((sum, product) => sum + product.externalQuantity, 0);
-        const totalOverall = totalInternal + totalExternal;
-
-        document.getElementById('totalInternal').textContent = totalInternal;
-        document.getElementById('totalExternal').textContent = totalExternal;
-        document.getElementById('totalOverall').textContent = totalOverall;
+    function saveDataToLocalStorage() {
+        localStorage.setItem('products', JSON.stringify(products));
+        alert("تم حفظ البيانات بنجاح!");
     }
 
-    function saveDataToServer() {
-        // هنا يجب استبدال هذا الجزء بكود يقوم بإرسال البيانات إلى السيرفر
-        console.log("تم حفظ البيانات على السيرفر");
-    }
-
-    // عرض البيانات عند تحميل الصفحة
     updateTable();
-    updateStatistics();
 </script>
 
 </body>
-</html> 
+</html>
