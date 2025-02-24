@@ -118,6 +118,10 @@
             <label>الكمية في المخزن الخارجي:</label>
             <input type="number" id="externalStock" class="form-control" value="0">
         </div>
+        <div class="form-group">
+            <label>ملاحظات:</label>
+            <input type="text" id="notes" class="form-control" placeholder="اكتب الملاحظات هنا">
+        </div>
         <button onclick="updateStock()" class="btn btn-primary"><i class="fas fa-sync"></i> تحديث الجرد</button>
         <table class="table table-bordered mt-4">
             <thead class="thead-dark">
@@ -126,8 +130,9 @@
                     <th>المخزن الداخلي</th>
                     <th>المخزن الخارجي</th>
                     <th>المجموع الكلي</th>
-                    <th>تاريخ الإضافة</th>
+                    <th>تاريخ ووقت الإضافة</th>
                     <th>ملاحظات</th>
+                    <th>حذف</th>
                 </tr>
             </thead>
             <tbody id="inventoryTable"></tbody>
@@ -187,23 +192,47 @@
             const material = document.getElementById('materialSelect').value;
             const internalStock = parseInt(document.getElementById('internalStock').value);
             const externalStock = parseInt(document.getElementById('externalStock').value);
-
+            const notes = document.getElementById('notes').value;
+            
             if (!material) {
                 alert('يرجى اختيار مادة!');
                 return;
             }
-
+            
             const table = document.getElementById('inventoryTable');
-            const row = table.insertRow(0);
-            row.innerHTML = `
-                <td>${material}</td>
-                <td>${internalStock}</td>
-                <td>${externalStock}</td>
-                <td>${internalStock + externalStock}</td>
-                <td>${new Date().toLocaleDateString()}</td>
-                <td><input type="text" class="form-control" placeholder="أضف ملاحظة"></td>
-            `;
+            let found = false;
+            
+            // البحث عن المادة وتحديثها إذا كانت موجودة
+            for (let i = 0; i < table.rows.length; i++) {
+                if (table.rows[i].cells[0].textContent === material) {
+                    table.rows[i].cells[1].textContent = internalStock;
+                    table.rows[i].cells[2].textContent = externalStock;
+                    table.rows[i].cells[3].textContent = internalStock + externalStock;
+                    table.rows[i].cells[4].textContent = new Date().toLocaleString();
+                    table.rows[i].cells[5].textContent = notes;
+                    found = true;
+                    break;
+                }
+            }
+            
+            // إذا لم توجد المادة، إضافة صف جديد مع زر الحذف
+            if (!found) {
+                const row = table.insertRow(0);
+                row.innerHTML = `<td>${material}</td>
+                                 <td>${internalStock}</td>
+                                 <td>${externalStock}</td>
+                                 <td>${internalStock + externalStock}</td>
+                                 <td>${new Date().toLocaleString()}</td>
+                                 <td>${notes}</td>
+                                 <td><button class="btn btn-danger" onclick="deleteRow(this)"><i class="fas fa-trash-alt"></i> حذف</button></td>`;
+            }
+            
+            updateSummary();
+        }
 
+        function deleteRow(btn) {
+            const row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
             updateSummary();
         }
 
