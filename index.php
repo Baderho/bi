@@ -1,5 +1,5 @@
 <?php
-// إعداد الاتصال بقاعدة البيانات
+// إعداد الاتصال بقاعدة البيانات 
 $servername = "localhost";
 $username = "your_username"; // استبدل باسم المستخدم الخاص بك
 $password = "your_password"; // استبدل كلمة المرور الخاصة بك
