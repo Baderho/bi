@@ -1,141 +1,226 @@
-<script>
-    // تهيئة Firebase
-    const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_AUTH_DOMAIN",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_STORAGE_BUCKET",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    let products = JSON.parse(localStorage.getItem('products')) || [];
-
-    document.getElementById('productName').addEventListener('change', function() {
-        const selectedValue = this.value;
-        const customProductContainer = document.getElementById('customProductContainer');
-        if (selectedValue === 'other') {
-            customProductContainer.style.display = 'flex';
-        } else {
-            customProductContainer.style.display = 'none';
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام جرد المواد الكيميائية</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+            text-align: right;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
         }
-    });
-
-    document.getElementById('addProductForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        let productName = document.getElementById('productName').value;
-        if (productName === 'other') {
-            productName = document.getElementById('customProductName').value;
+        .container {
+            width: 80%;
+            margin: auto;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
-
-        const notes = document.getElementById('notes').value;
-        const internalQuantity = parseInt(document.getElementById('internalQuantity').value);
-        const externalQuantity = parseInt(document.getElementById('externalQuantity').value);
-
-        const existingProduct = products.find(product => product.name === productName);
-
-        if (existingProduct) {
-            existingProduct.internalQuantity = internalQuantity;
-            existingProduct.externalQuantity = externalQuantity;
-            existingProduct.notes = notes;
-            existingProduct.total = internalQuantity + externalQuantity;
-            existingProduct.lastModified = new Date().toLocaleString();
-        } else {
-            const product = {
-                name: productName,
-                notes: notes,
-                internalQuantity: internalQuantity,
-                externalQuantity: externalQuantity,
-                total: internalQuantity + externalQuantity,
-                lastModified: new Date().toLocaleString(),
-            };
-            products.push(product);
+        h2 {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
         }
-
-        // إضافة المادة فوراً إلى الجدول
-        updateTable();
-        updateStatistics();
-
-        // حفظ البيانات في LocalStorage
-        localStorage.setItem('products', JSON.stringify(products));
-
-        // مسح النموذج بعد الإضافة
-        document.getElementById('addProductForm').reset();
-    });
-
-    function updateTable() {
-        const tbody = document.getElementById('productTableBody');
-        tbody.innerHTML = '';
-
-        products.forEach((product, index) => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${product.name}</td>
-                <td>${product.notes}</td>
-                <td>${product.internalQuantity}</td>
-                <td>${product.externalQuantity}</td>
-                <td>${product.total}</td>
-                <td>${product.lastModified}</td>
-                <td>
-                    <button class="btn btn-delete btn-sm" onclick="deleteProduct(${index})">حذف</button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
-
-    function deleteProduct(index) {
-        products.splice(index, 1);
-        updateTable();
-        updateStatistics();
-        localStorage.setItem('products', JSON.stringify(products));
-    }
-
-    function updateStatistics() {
-        const totalInternal = products.reduce((sum, product) => sum + product.internalQuantity, 0);
-        const totalExternal = products.reduce((sum, product) => sum + product.externalQuantity, 0);
-        const totalOverall = totalInternal + totalExternal;
-
-        document.getElementById('totalInternal').textContent = totalInternal;
-        document.getElementById('totalExternal').textContent = totalExternal;
-        document.getElementById('totalOverall').textContent = totalOverall;
-    }
-
-    async function saveDataToServer() {
-        try {
-            await db.collection("chemicals").doc("data").set({
-                products: products,
-                lastUpdated: new Date().toISOString()
-            });
-            alert("تم الحفظ بنجاح على السحابة");
-            localStorage.setItem('products', JSON.stringify(products));
-        } catch (error) {
-            console.error("خطأ في الحفظ:", error);
-            alert("فشل  حفظ البيانات على السحابة");
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
         }
-    }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background: #007bff;
+            color: white;
+            font-size: 16px;
+        }
+        select, input, button {
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            width: 100%;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .summary-table {
+            margin-top: 30px;
+            font-weight: bold;
+            text-align: center;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>نظام جرد المواد الكيميائية</h2>
+        <div class="form-group">
+            <label>اختر المادة:</label>
+            <select id="materialSelect" class="form-control">
+                <option value="">-- اختر المادة --</option>
+                <option value="Mousse FORT">Mousse FORT</option>
+                <option value="Clean Pot">Clean Pot</option>
+                <option value="PROACID">PROACID</option>
+                <option value="HANDY PREP">HANDY PREP</option>
+                <option value="cream clean">cream clean</option>
+                <option value="Duromax">Duromax</option>
+                <option value="Hypo Bleach">Hypo Bleach</option>
+                <option value="No Streak RTU">No Streak RTU</option>
+                <option value="FLOORESH">FLOORESH</option>
+                <option value="GX2">GX2</option>
+                <option value="Aqua Soul">Aqua Soul</option>
+                <option value="Hand Roll">Hand Roll</option>
+                <option value="Thinner">Thinner</option>
+                <option value="Stark">Stark</option>
+                <option value="Sanitol">Sanitol</option>
+                <option value="Gx6">Gx6</option>
+                <option value="addNew">+ إضافة مادة جديدة</option>
+            </select>
+        </div>
+        <div class="form-group hidden" id="newMaterialGroup">
+            <input type="text" id="newMaterial" placeholder="إضافة مادة جديدة" class="form-control">
+            <button onclick="addMaterial()" class="btn btn-success mt-2" id="addMaterialBtn"><i class="fas fa-plus"></i> إضافة</button>
+        </div>
+        <div class="form-group">
+            <label>الكمية في المخزن الداخلي:</label>
+            <input type="number" id="internalStock" class="form-control" value="0">
+        </div>
+        <div class="form-group">
+            <label>الكمية في المخزن الخارجي:</label>
+            <input type="number" id="externalStock" class="form-control" value="0">
+        </div>
+        <button onclick="updateStock()" class="btn btn-primary"><i class="fas fa-sync"></i> تحديث الجرد</button>
+        <table class="table table-bordered mt-4">
+            <thead class="thead-dark">
+                <tr>
+                    <th>المادة</th>
+                    <th>المخزن الداخلي</th>
+                    <th>المخزن الخارجي</th>
+                    <th>المجموع الكلي</th>
+                    <th>تاريخ الإضافة</th>
+                    <th>ملاحظات</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryTable"></tbody>
+        </table>
+        <div class="summary-table">
+            <h3>ملخص الكميات</h3>
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>إجمالي المخزن الداخلي</th>
+                        <th>إجمالي المخزن الخارجي</th>
+                        <th>الإجمالي الكلي</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="totalInternal">0</td>
+                        <td id="totalExternal">0</td>
+                        <td id="totalStock">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    async function fetchDataFromServer() {
-        try {
-            const doc = await db.collection("chemicals").doc("data").get();
-            if (doc.exists) {
-                products = doc.data().products;
-                localStorage.setItem('products', JSON.stringify(products));
-                updateTable();
-                updateStatistics();
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('materialSelect').addEventListener('change', function() {
+            if (this.value === 'addNew') {
+                document.getElementById('newMaterialGroup').classList.remove('hidden');
+            } else {
+                document.getElementById('newMaterialGroup').classList.add('hidden');
             }
-        } catch (error) {
-            console.error("خطأ في جلب البيانات:", error);
-            alert("فشل في جلب البيانات من السحابة");
-        }
-    }
+        });
 
-    window.addEventListener('load', () => {
-        fetchDataFromServer();
-        updateTable();
-        updateStatistics();
-    });
-</script>
+        function addMaterial() {
+            const newMaterial = document.getElementById('newMaterial').value;
+            if (newMaterial) {
+                const select = document.getElementById('materialSelect');
+                const option = document.createElement('option');
+                option.value = newMaterial;
+                option.text = newMaterial;
+                select.add(option);
+                select.value = newMaterial;
+                document.getElementById('newMaterialGroup').classList.add('hidden');
+                document.getElementById('newMaterial').value = '';
+                alert('تمت إضافة المادة بنجاح!');
+            } else {
+                alert('يرجى إدخال اسم المادة!');
+            }
+        }
+
+        function updateStock() {
+            const material = document.getElementById('materialSelect').value;
+            const internalStock = parseInt(document.getElementById('internalStock').value);
+            const externalStock = parseInt(document.getElementById('externalStock').value);
+
+            if (!material) {
+                alert('يرجى اختيار مادة!');
+                return;
+            }
+
+            const table = document.getElementById('inventoryTable');
+            const row = table.insertRow(0);
+            row.innerHTML = `
+                <td>${material}</td>
+                <td>${internalStock}</td>
+                <td>${externalStock}</td>
+                <td>${internalStock + externalStock}</td>
+                <td>${new Date().toLocaleDateString()}</td>
+                <td><input type="text" class="form-control" placeholder="أضف ملاحظة"></td>
+            `;
+
+            updateSummary();
+        }
+
+        function updateSummary() {
+            let totalInternal = 0;
+            let totalExternal = 0;
+
+            const rows = document.querySelectorAll('#inventoryTable tr');
+            rows.forEach(row => {
+                totalInternal += parseInt(row.cells[1].textContent);
+                totalExternal += parseInt(row.cells[2].textContent);
+            });
+
+            document.getElementById('totalInternal').textContent = totalInternal;
+            document.getElementById('totalExternal').textContent = totalExternal;
+            document.getElementById('totalStock').textContent = totalInternal + totalExternal;
+        }
+    </script>
+</body>
+</html>
