@@ -40,19 +40,20 @@ body {
   animation: grow 0.3s ease forwards;
 }
 
-/* Custom utility classes */
-.section-container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16;
-}
+@layer components {
+  .section-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16;
+  }
 
-.btn-primary {
-  @apply bg-primary hover:bg-primary-dark text-white font-bold py-2 px-6 rounded-lg transition duration-300;
-}
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-dark text-white font-bold py-2 px-6 rounded-lg transition duration-300;
+  }
 
-.btn-secondary {
-  @apply bg-secondary hover:bg-secondary-dark text-white font-bold py-2 px-6 rounded-lg transition duration-300;
-}
+  .btn-secondary {
+    @apply bg-secondary hover:bg-secondary-dark text-white font-bold py-2 px-6 rounded-lg transition duration-300;
+  }
 
-.card {
-  @apply bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-300;
+  .card {
+    @apply bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-300;
+  }
 }
