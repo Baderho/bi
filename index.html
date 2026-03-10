@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بدر الحسبان | Bader Al-Husban</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;700;900&family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #070707;
+            --bg-panel: #111111;
+            --green-glow: #00b85c;
+            --gold-accent: #f5a623;
+            --text-main: #ffffff;
+            --text-muted: #999999;
+            --glass-bg: rgba(255, 255, 255, 0.02);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --transition-smooth: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+
+        html[lang="ar"] { font-family: 'Tajawal', sans-serif; }
+        html[lang="en"] { font-family: 'Outfit', sans-serif; }
+        html[lang="ar"] .lang-en { display: none; }
+        html[lang="en"] .lang-ar { display: none; }
+
+        body { background-color: var(--bg-dark); color: var(--text-main); overflow: hidden; }
+
+        /* Custom Cursor */
+        .custom-cursor { position: fixed; width: 30px; height: 30px; border: 2px solid var(--green-glow); border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s, background-color 0.3s; z-index: 9999; box-shadow: 0 0 15px var(--green-glow); }
+        .cursor-dot { position: fixed; width: 6px; height: 6px; background-color: var(--gold-accent); border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); z-index: 10000; }
+
+        /* Language Toggle */
+        .lang-toggle { position: fixed; top: 30px; left: 30px; z-index: 1000; background: var(--glass-bg); border: 1px solid var(--green-glow); color: var(--green-glow); padding: 10px 25px; border-radius: 30px; font-weight: bold; backdrop-filter: blur(10px); transition: var(--transition-smooth); font-size: 1rem; }
+        html[lang="ar"] .lang-toggle { left: 30px; right: auto; }
+        html[lang="en"] .lang-toggle { right: 30px; left: auto; }
+        .lang-toggle:hover { background: rgba(0, 184, 92, 0.15); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0, 184, 92, 0.2); }
+
+        /* Layout */
+        .layout-wrapper { display: flex; height: 100vh; width: 100vw; }
+
+        /* Fixed Panel */
+        .fixed-panel { flex: 0 0 35%; background: linear-gradient(135deg, var(--bg-panel) 0%, var(--bg-dark) 100%); padding: 5vw; display: flex; flex-direction: column; justify-content: center; position: relative; border-left: 1px solid var(--glass-border); }
+        html[lang="en"] .fixed-panel { border-left: none; border-right: 1px solid var(--glass-border); }
+        .fixed-panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: radial-gradient(circle at 20% 30%, rgba(0, 184, 92, 0.05) 0%, transparent 60%); z-index: 0; pointer-events: none; }
+        
+        .brand-content { position: relative; z-index: 1; }
+        .name-title { font-size: 4rem; font-weight: 900; line-height: 1.1; margin-bottom: 20px; color: var(--text-main); }
+        .role-title { color: var(--green-glow); font-size: 1.1rem; margin-bottom: 30px; font-weight: 700; line-height: 1.6; }
+        
+        .contact-grid { display: flex; flex-direction: column; gap: 15px; margin-top: 40px; }
+        .contact-item { display: flex; align-items: center; gap: 15px; font-size: 1rem; color: var(--text-muted); transition: color 0.3s; text-decoration: none; direction: ltr; justify-content: flex-end; }
+        html[lang="en"] .contact-item { justify-content: flex-start; }
+        .contact-item:hover { color: var(--gold-accent); }
+
+        /* Scroll Panel */
+        .scroll-panel { flex: 1; overflow-y: auto; padding: 5vw 6vw; scroll-behavior: smooth; }
+        .scroll-panel::-webkit-scrollbar { width: 0px; }
+        
+        .content-section { margin-bottom: 80px; opacity: 0; transform: translateY(40px); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); }
+        .content-section.visible { opacity: 1; transform: translateY(0); }
+        
+        .section-heading { font-size: 2rem; margin-bottom: 30px; display: flex; align-items: center; gap: 20px; color: var(--text-main); font-weight: 800; }
+        .section-heading::before { content: ''; display: inline-block; width: 40px; height: 2px; background-color: var(--green-glow); box-shadow: 0 0 10px var(--green-glow); }
+
+        /* Text & Tags */
+        .summary-text { font-size: 1.15rem; line-height: 1.9; color: var(--text-muted); margin-bottom: 20px; }
+        .tags-wrapper { display: flex; flex-wrap: wrap; gap: 10px; }
+        .tag { padding: 8px 18px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; font-size: 0.9rem; color: var(--text-muted); transition: var(--transition-smooth); }
+        .tag:hover { border-color: var(--green-glow); color: var(--green-glow); background: rgba(0, 184, 92, 0.05); transform: translateY(-2px); }
+
+        /* Glass Cards */
+        .glass-card { background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(10px); border-radius: 16px; padding: 35px; margin-bottom: 25px; position: relative; overflow: hidden; transition: transform 0.4s, border-color 0.4s; }
+        .glass-card::before { content: ''; position: absolute; top: 0; right: 0; width: 3px; height: 100%; background: var(--green-glow); transform: scaleY(0); transform-origin: bottom; transition: transform 0.4s ease; }
+        html[lang="en"] .glass-card::before { right: auto; left: 0; }
+        .glass-card:hover { transform: translateY(-5px); border-color: rgba(0, 184, 92, 0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .glass-card:hover::before { transform: scaleY(1); }
+
+        .job-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .job-title { font-size: 1.5rem; color: var(--text-main); font-weight: 700; width: 100%; }
+        .job-company { color: var(--green-glow); font-size: 1.1rem; font-weight: 600; }
+        .job-date { color: var(--gold-accent); font-family: monospace; font-size: 0.95rem; background: rgba(245, 166, 35, 0.1); padding: 4px 10px; border-radius: 4px; }
+        
+        .job-bullets { list-style: none; margin-top: 15px; }
+        .job-bullets li { position: relative; padding-right: 20px; margin-bottom: 12px; color: var(--text-muted); line-height: 1.7; font-size: 1.05rem; }
+        html[lang="en"] .job-bullets li { padding-right: 0; padding-left: 20px; }
+        .job-bullets li::before { content: '▹'; position: absolute; right: 0; top: 0; color: var(--green-glow); font-weight: bold; }
+        html[lang="en"] .job-bullets li::before { right: auto; left: 0; }
+
+        /* ------------------------------------- */
+        /* التوافق مع الهواتف المحمولة (Mobile) */
+        /* ------------------------------------- */
+        @media (max-width: 900px) {
+            .layout-wrapper { flex-direction: column; height: auto; }
+            body { overflow-y: auto; overflow-x: hidden; }
+            
+            .fixed-panel { 
+                flex: none; min-height: auto; 
+                padding: 100px 6vw 10vw 6vw; /* توفير مساحة لزر اللغة بالمنطقة العلوية */
+                border-left: none; border-bottom: 1px solid var(--glass-border); 
+            }
+            html[lang="en"] .fixed-panel { border-right: none; }
+            
+            .scroll-panel { flex: none; overflow: visible; padding: 10vw 6vw; height: auto; }
+            
+            /* تحجيم الخطوط للهاتف */
+            .name-title { font-size: 2.5rem; }
+            .section-heading { font-size: 1.6rem; margin-bottom: 25px; }
+            .job-title { font-size: 1.3rem; }
+            .summary-text { font-size: 1.05rem; }
+            
+            /* تعديل مساحات البطاقات */
+            .glass-card { padding: 25px 20px; border-radius: 12px; }
+            
+            /* تعديل زر اللغة للهاتف */
+            .lang-toggle { top: 20px; left: 20px; padding: 8px 20px; font-size: 0.9rem; }
+            html[lang="ar"] .lang-toggle { left: 20px; right: auto; }
+            html[lang="en"] .lang-toggle { right: 20px; left: auto; }
+            
+            /* إيقاف الماوس المخصص إجبارياً على شاشات الهواتف */
+            .custom-cursor, .cursor-dot { display: none !important; }
+            * { cursor: auto !important; }
+        }
+
+        /* لضمان اختفاء الماوس المخصص على جميع أجهزة اللمس مثل التابلت */
+        @media (hover: none) and (pointer: coarse) {
+            .custom-cursor, .cursor-dot { display: none !important; }
+            * { cursor: auto !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="custom-cursor" id="cursor"></div>
+    <div class="cursor-dot" id="dot"></div>
+
+    <button class="lang-toggle interactive-hover" onclick="toggleLanguage()">
+        <span class="lang-ar">English</span>
+        <span class="lang-en">عربي</span>
+    </button>
+
+    <div class="layout-wrapper">
+        
+        <aside class="fixed-panel">
+            <div class="brand-content">
+                <h1 class="name-title">
+                    <span class="lang-ar">بدر<br>الحسبان</span>
+                    <span class="lang-en">BADER<br>AL-HUSBAN</span>
+                </h1>
+                
+                <div class="role-title interactive-hover">
+                    <span class="lang-ar">أخصائي إشراك الشباب | التعبئة المجتمعية | التعليم والتعلم الرقمي</span>
+                    <span class="lang-en">Youth Engagement Specialist | Community Mobilization | Digital Education & Learning</span>
+                </div>
+
+                <div class="contact-grid">
+                    <a href="https://linkedin.com/in/baderhusban" target="_blank" class="contact-item interactive-hover">
+                        linkedin.com/in/baderhusban <span style="color:var(--gold-accent)">🔗</span>
+                    </a>
+                    <a href="mailto:baderahusban@gmail.com" class="contact-item interactive-hover">
+                        baderahusban@gmail.com <span style="color:var(--gold-accent)">✉️</span>
+                    </a>
+                    <a href="tel:+962791087449" class="contact-item interactive-hover">
+                        +962 791 087 449 <span style="color:var(--gold-accent)">📞</span>
+                    </a>
+                    <div class="contact-item">
+                        <span class="lang-ar">عمان، الأردن</span><span class="lang-en">Amman, Jordan</span> <span style="color:var(--gold-accent)">📍</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="scroll-panel" id="scroll-area">
+            
+            <section class="content-section" style="margin-top: 2vh;">
+                <h2 class="section-heading">
+                    <span class="lang-ar">الملخص المهني</span>
+                    <span class="lang-en">Summary</span>
+                </h2>
+                <p class="summary-text">
+                    <span class="lang-ar">أخصائي في إشراك الشباب والتعلم الموجه للمجتمع بخبرة تزيد عن 5 سنوات في تقديم تدريبات تتمحور حول الشباب، تيسير مجموعات التركيز والمشاورات المجتمعية، ودعم تعلم البرامج من خلال التقارير، صحائف الوقائع، التوثيق، وأنظمة التغذية الراجعة. مؤسس مبادرة الرقيم، التي تركز على التحول الرقمي والابتكار بقيادة الشباب في المجتمعات الأقل حظاً. أمتلك قدرة قوية على حشد طاقات الشباب، التعاون مع الشركاء (المنظمات غير الحكومية/المدارس/الجهات الفاعلة المجتمعية)، وتحويل الرؤى الميدانية إلى تحسينات عملية في البرامج.</span>
+                    <span class="lang-en">Youth engagement and community-driven learning specialist with 5+ years of experience delivering youth-centered trainings, facilitating focus groups and community consultations, and supporting program learning through reports, fact sheets, documentation, and feedback systems. Founder of Raqeem Initiative, focused on digital transformation and youth-led innovation in underserved communities. Strong ability to mobilize youth, collaborate with partners (NGOs/schools/community actors), and translate field insights into practical program improvements.</span>
+                </p>
+            </section>
+
+            <section class="content-section">
+                <h2 class="section-heading">
+                    <span class="lang-ar">الكفاءات الأساسية</span>
+                    <span class="lang-en">Core Competencies</span>
+                </h2>
+                <div class="tags-wrapper">
+                    <span class="tag interactive-hover lang-ar">إشراك وتمكين الشباب</span>
+                    <span class="tag interactive-hover lang-ar">التعبئة المجتمعية</span>
+                    <span class="tag interactive-hover lang-ar">التيسير ومجموعات التركيز (FGDs)</span>
+                    <span class="tag interactive-hover lang-ar">المشاورات المجتمعية</span>
+                    <span class="tag interactive-hover lang-ar">إدارة المعرفة</span>
+                    <span class="tag interactive-hover lang-ar">إعداد التقارير والتوثيق</span>
+                    <span class="tag interactive-hover lang-ar">التغذية الراجعة والمساءلة</span>
+                    <span class="tag interactive-hover lang-ar">تعلم وتحسين البرامج</span>
+                    <span class="tag interactive-hover lang-ar">تصميم وتقديم التدريب</span>
+                    <span class="tag interactive-hover lang-ar">محو الأمية الرقمية</span>
+                    <span class="tag interactive-hover lang-ar">التوعية بالذكاء الاصطناعي والأمن السيبراني</span>
+                    <span class="tag interactive-hover lang-ar">التواصل الرقمي والحملات</span>
+                    <span class="tag interactive-hover lang-ar">السرد القصصي وإنتاج المحتوى</span>
+                    <span class="tag interactive-hover lang-ar">جمع البيانات (KoboToolbox)</span>
+                    <span class="tag interactive-hover lang-ar">إكسل (التحليل والتصور)</span>
+                    <span class="tag interactive-hover lang-ar">التواصل الحساس للنزاعات</span>
+                    
+                    <span class="tag interactive-hover lang-en">Youth Empowerment & Engagement</span>
+                    <span class="tag interactive-hover lang-en">Community Mobilization</span>
+                    <span class="tag interactive-hover lang-en">Facilitation & Focus Groups (FGDs)</span>
+                    <span class="tag interactive-hover lang-en">Community Consultations</span>
+                    <span class="tag interactive-hover lang-en">Knowledge Management & Reporting</span>
+                    <span class="tag interactive-hover lang-en">Documentation</span>
+                    <span class="tag interactive-hover lang-en">Feedback & Accountability</span>
+                    <span class="tag interactive-hover lang-en">Program Learning & Improvement</span>
+                    <span class="tag interactive-hover lang-en">Training Design & Delivery</span>
+                    <span class="tag interactive-hover lang-en">Digital Literacy</span>
+                    <span class="tag interactive-hover lang-en">AI & Cybersecurity Awareness</span>
+                    <span class="tag interactive-hover lang-en">Digital Comm & Campaigns</span>
+                    <span class="tag interactive-hover lang-en">Storytelling & Content Production</span>
+                    <span class="tag interactive-hover lang-en">Data Collection (KoboToolbox)</span>
+                    <span class="tag interactive-hover lang-en">Excel (Analysis & Visualization)</span>
+                    <span class="tag interactive-hover lang-en">Conflict-Sensitive Comm</span>
+                </div>
+            </section>
+
+            <section class="content-section">
+                <h2 class="section-heading">
+                    <span class="lang-ar">الخبرة المهنية</span>
+                    <span class="lang-en">Professional Experience</span>
+                </h2>
+                
+                <div class="glass-card interactive-hover">
+                    <div class="job-header">
+                        <div class="job-title"><span class="lang-ar">مدرب مهارات رقمية</span><span class="lang-en">Digital Skills Trainer</span></div>
+                        <div class="job-company">Digital Opportunity Trust (DOT) Jordan</div>
+                        <div class="job-date"><span class="lang-ar">آب 2025 - الحاضر</span><span class="lang-en">Aug 2025 - Present</span></div>
+                    </div>
+                    <ul class="job-bullets">
+                        <li><span class="lang-ar">تقديم تدريبات هيكلية في محو الأمية الرقمية للشباب (ذكوراً وإناثاً) باستخدام أساليب تفاعلية تتمحور حول المتعلم.</span><span class="lang-en">Deliver structured digital literacy training for youth (female & male), using interactive, learner-centered methods.</span></li>
+                        <li><span class="lang-ar">الإشراف على مسارات المختبر المفتوح (أساسيات الحاسوب، بايثون، تطوير الويب الشامل، التصميم الجرافيكي) لضمان تدفق التعلم ودعم المشاركين بسلاسة.</span><span class="lang-en">Supervise Open Lab tracks (Computer Basics, Python, Full Stack Development, Graphic Design) to ensure smooth learning flow and participant support.</span></li>
+                        <li><span class="lang-ar">المساهمة في تحسين تصميم التعلم وممارسات التقديم لزيادة فعالية المسارات التدريبية.</span><span class="lang-en">Contribute to improving learning design and delivery practices to increase the effectiveness of training pathways.</span></li>
+                        <li><span class="lang-ar">تنسيق ورش العمل وإنتاج تقارير ووثائق التدريب بدقة.</span><span class="lang-en">Coordinate workshops end-to-end and produce training documentation and reports.</span></li>
+                    </ul>
+                </div>
+
+                <div class="glass-card interactive-hover">
+                    <div class="job-header">
+                        <div class="job-title"><span class="lang-ar">مدرب مهارات رقمية ومستشار إعلامي</span><span class="lang-en">Digital Skills Trainer & Media Consultant</span></div>
+                        <div class="job-company">عمل حر (Freelancer)</div>
+                        <div class="job-date"><span class="lang-ar">كانون الثاني 2021 - الحاضر</span><span class="lang-en">Jan 2021 - Present</span></div>
+                    </div>
+                    <ul class="job-bullets">
+                        <li><span class="lang-ar">تصميم وتقديم جلسات تدريبية في الذكاء الاصطناعي، الأمن السيبراني، وأدوات الإنتاجية، مخصصة لمتعلمي الجيل Z ومستويات التعلم المتنوعة.</span><span class="lang-en">Design and deliver training sessions in AI, cybersecurity, and productivity tools, adapted for Gen Z learners.</span></li>
+                        <li><span class="lang-ar">الشراكة مع المنظمات غير الحكومية لتخصيص محتوى التدريب وأسلوب التقديم بما يتناسب مع أهداف البرنامج.</span><span class="lang-en">Partner with NGOs to tailor training content and delivery to program goals.</span></li>
+                        <li><span class="lang-ar">إرشاد أكثر من 300 شاب وشابة في صناعة البودكاست، وإنشاء محتوى الفيديو لدعم صوت الشباب.</span><span class="lang-en">Mentor 300+ youth in podcasting and video content creation, supporting youth voice.</span></li>
+                        <li><span class="lang-ar">ابتكار حملات رقمية تضخم أصوات الشباب وتعزز المشاركة المدنية.</span><span class="lang-en">Create digital campaigns that amplify youth voices and strengthen civic engagement.</span></li>
+                    </ul>
+                </div>
+
+                <div class="glass-card interactive-hover">
+                    <div class="job-header">
+                        <div class="job-title"><span class="lang-ar">متدرب في جودة البرامج</span><span class="lang-en">Program Quality Intern</span></div>
+                        <div class="job-company">Action Against Hunger</div>
+                        <div class="job-date"><span class="lang-ar">كانون الأول 2024 - شباط 2025</span><span class="lang-en">Dec 2024 - Feb 2025</span></div>
+                    </div>
+                    <ul class="job-bullets">
+                        <li><span class="lang-ar">إجراء تقييمات ميدانية والمساهمة في تصميم معايير جودة تركز على الشباب لتحسين أداء البرنامج.</span><span class="lang-en">Conduct field assessments and contribute to the design of youth-centered quality benchmarks.</span></li>
+                        <li><span class="lang-ar">إنتاج تقارير تقييمية وصحائف وقائع بصرية للتعلم الداخلي والمناصرة.</span><span class="lang-en">Produce evaluation reports and visual fact sheets for internal learning and advocacy.</span></li>
+                        <li><span class="lang-ar">المساعدة في تعزيز أنظمة التغذية الراجعة المحلية لتعزيز مساءلة الشباب واستجابة البرامج الإنسانية.</span><span class="lang-en">Help strengthen localized feedback systems to enhance youth accountability and responsiveness.</span></li>
+                    </ul>
+                </div>
+
+                <div class="glass-card interactive-hover">
+                    <div class="job-header">
+                        <div class="job-title"><span class="lang-ar">متدرب في التواصل المجتمعي</span><span class="lang-en">Community Outreach Intern</span></div>
+                        <div class="job-company">Crown Prince Foundation | Mafraq, Jordan</div>
+                        <div class="job-date"><span class="lang-ar">أيلول 2024 - كانون الأول 2024</span><span class="lang-en">Sep 2024 - Dec 2024</span></div>
+                    </div>
+                    <ul class="job-bullets">
+                        <li><span class="lang-ar">قيادة حملات التعبئة الشبابية ودعم المشاركة الشاملة في الحوار المدني والمبادرات الوطنية.</span><span class="lang-en">Lead youth mobilization campaigns and support inclusive participation in civic dialogue.</span></li>
+                        <li><span class="lang-ar">تيسير جلسات الحوار واجتماعات التغذية الراجعة المجتمعية وورش العمل التشاركية مع الشباب وأصحاب المصلحة.</span><span class="lang-en">Facilitate dialogue sessions, community feedback meetings, and participatory workshops.</span></li>
+                        <li><span class="lang-ar">توثيق قصص نجاح الشباب وإنتاج تقارير تدعم المناصرة والرؤية الموجهة نحو السياسات.</span><span class="lang-en">Document youth success stories and produce reports that support advocacy and visibility.</span></li>
+                    </ul>
+                </div>
+
+                <div class="glass-card interactive-hover">
+                    <div class="job-header">
+                        <div class="job-title"><span class="lang-ar">معلم حاسوب</span><span class="lang-en">Computer Science Teacher</span></div>
+                        <div class="job-company">Al-Tamam Private School | Mafraq, Jordan</div>
+                        <div class="job-date"><span class="lang-ar">آب 2022 - آب 2024</span><span class="lang-en">Aug 2022 - Aug 2024</span></div>
+                    </div>
+                    <ul class="job-bullets">
+                        <li><span class="lang-ar">تدريس أكثر من 300 طالب البرمجة وحل المشكلات والأخلاقيات الرقمية.</span><span class="lang-en">Teach 300+ students coding, problem-solving, and digital ethics.</span></li>
+                        <li><span class="lang-ar">تأسيس أندية تقنية لتعزيز ابتكار الشباب - خاصة في مجالات الذكاء الاصطناعي والأمن السيبراني.</span><span class="lang-en">Establish tech clubs to foster youth innovation in AI and cybersecurity themes.</span></li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="content-section">
+                <h2 class="section-heading">
+                    <span class="lang-ar">المشاريع والمبادرات</span>
+                    <span class="lang-en">Projects</span>
+                </h2>
+                <div class="glass-card interactive-hover" style="border-color: rgba(245, 166, 35, 0.3);">
+                    <div class="job-header">
+                        <div class="job-title"><span class="lang-ar">مبادرة الرقيم | المؤسس</span><span class="lang-en">Raqeem Initiative | Founder</span></div>
+                        <div class="job-company" style="color: var(--gold-accent);">Jordan</div>
+                        <div class="job-date"><span class="lang-ar">آب 2024 - الحاضر</span><span class="lang-en">Aug 2024 - Present</span></div>
+                    </div>
+                    <ul class="job-bullets">
+                        <li><span class="lang-ar">قيادة مبادرة تمكين شبابية تدعم الشباب والمعلمين في المجتمعات المهمشة من خلال التكنولوجيا، الإبداع، والتدريب القيادي.</span><span class="lang-en">Lead a youth empowerment initiative supporting youth and educators in marginalized communities through technology, creativity, and leadership training.</span></li>
+                        <li><span class="lang-ar">ربط الشباب في المناطق الأقل حظاً بالأدوات والموجهين لتقليص الفجوة الرقمية وتعزيز الابتكار بقيادة الشباب.</span><span class="lang-en">Connect underserved youth with tools and mentors to reduce the digital gap and promote youth-led innovation.</span></li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="content-section" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;">
+                
+                <div class="glass-card interactive-hover">
+                    <h2 class="section-heading" style="font-size: 1.5rem; margin-bottom: 20px;">
+                        <span class="lang-ar">التعليم</span><span class="lang-en">Education</span>
+                    </h2>
+                    <h3 style="color: var(--text-main); font-size: 1.2rem; margin-bottom: 5px;">
+                        <span class="lang-ar">بكالوريوس علوم الحاسوب</span><span class="lang-en">Bachelor of Computer Science</span>
+                    </h3>
+                    <p style="color: var(--green-glow); margin-bottom: 10px;">Al al-Bayt University | Mafraq, Jordan</p>
+                    <p style="color: var(--text-muted);"><span class="lang-ar">تموز 2017 - تموز 2021</span><span class="lang-en">Jul 2017 - Jul 2021</span></p>
+                </div>
+
+                <div class="glass-card interactive-hover">
+                    <h2 class="section-heading" style="font-size: 1.5rem; margin-bottom: 20px;">
+                        <span class="lang-ar">اللغات</span><span class="lang-en">Languages</span>
+                    </h2>
+                    <ul class="job-bullets" style="margin-top: 0;">
+                        <li><strong style="color: var(--text-main);"><span class="lang-ar">العربية:</span><span class="lang-en">Arabic:</span></strong> <span class="lang-ar">اللغة الأم</span><span class="lang-en">Native</span></li>
+                        <li><strong style="color: var(--text-main);"><span class="lang-ar">الإنجليزية:</span><span class="lang-en">English:</span></strong> <span class="lang-ar">متقدم</span><span class="lang-en">Advanced</span></li>
+                    </ul>
+                </div>
+
+                <div class="glass-card interactive-hover" style="grid-column: 1 / -1;">
+                    <h2 class="section-heading" style="font-size: 1.5rem; margin-bottom: 20px;">
+                        <span class="lang-ar">الأدوات والمنهجيات</span><span class="lang-en">Tools & Methods</span>
+                    </h2>
+                    <div class="tags-wrapper">
+                        <span class="tag interactive-hover">Excel (Data Visualization)</span>
+                        <span class="tag interactive-hover">Microsoft Office</span>
+                        <span class="tag interactive-hover">KoboToolbox</span>
+                        <span class="tag interactive-hover">Reporting & Documentation</span>
+                        <span class="tag interactive-hover">Social Media Analytics</span>
+                        <span class="tag interactive-hover">Multimedia Production</span>
+                    </div>
+                </div>
+            </section>
+
+            <div style="height: 10vh;"></div>
+        </main>
+    </div>
+
+    <script>
+        // Language Toggle Logic
+        function toggleLanguage() {
+            const htmlElement = document.documentElement;
+            if (htmlElement.getAttribute('lang') === 'ar') {
+                htmlElement.setAttribute('lang', 'en');
+                htmlElement.setAttribute('dir', 'ltr');
+            } else {
+                htmlElement.setAttribute('lang', 'ar');
+                htmlElement.setAttribute('dir', 'rtl');
+            }
+        }
+
+        // Custom Cursor Logic (Only active on non-touch devices)
+        const cursor = document.getElementById('cursor');
+        const dot = document.getElementById('dot');
+        const interactives = document.querySelectorAll('.interactive-hover');
+
+        // Check if device supports hover
+        const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+
+        if (!isTouchDevice) {
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+                dot.style.left = e.clientX + 'px';
+                dot.style.top = e.clientY + 'px';
+            });
+
+            interactives.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursor.style.width = '60px';
+                    cursor.style.height = '60px';
+                    cursor.style.backgroundColor = 'rgba(0, 184, 92, 0.08)';
+                    cursor.style.mixBlendMode = 'screen';
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursor.style.width = '30px';
+                    cursor.style.height = '30px';
+                    cursor.style.backgroundColor = 'transparent';
+                    cursor.style.mixBlendMode = 'normal';
+                });
+            });
+        }
+
+        // Scroll Reveal Animation Logic (Smart adaptation for Mobile/Desktop)
+        const isMobileView = window.innerWidth <= 900;
+        const observerOptions = {
+            // If mobile, observe relative to document viewport, else observe relative to scroll-area
+            root: isMobileView ? null : document.getElementById('scroll-area'),
+            threshold: 0.05,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.content-section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Show the first section immediately
+        setTimeout(() => {
+            if(document.querySelectorAll('.content-section')[0]) {
+                document.querySelectorAll('.content-section')[0].classList.add('visible');
+            }
+        }, 300);
+    </script>
+</body>
+</html>
